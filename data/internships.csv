@@ -1,0 +1,3 @@
+id,title,description,requirements,objectives,tasks,equipment,deliverables,work breakdown,duration_months,payment,supervisor
+012026,Autonomous Weeds and Terrain Perception,Computer vision and ranging pipeline for field robotics support.,"Python programming; Computer vision fundamentals; Advances ROS",Improve autonomous navigation and vegetation monitoring for mobile platforms.,"Detect invasive weeds and tag them; Approximate the grass height; Detect obstacles and calculate approximate distance","Jetson Orin Nano; Arducam IMX129; VL53L0X ranging sensors; LED 4"" Auxbeam; Teltonika RUT240 Router",Prototype perception software stack with labeled detections and distance estimates,20% hrdware integration. 80% coding,2,Available in Bizquick,Kaleb Granados
+
