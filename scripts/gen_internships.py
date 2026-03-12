@@ -201,7 +201,7 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     try:
         args = parse_args()
-        pdf_path = generate_pdf(args.id)
+        pdf_path = generate_pdf("012026")
         print(f"PDF generated: {pdf_path}")
     except Exception as exc:
         raise SystemExit(f"Error: {exc}")
