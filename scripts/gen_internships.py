@@ -1,4 +1,5 @@
-﻿from pathlib import Path
+import argparse
+from pathlib import Path
 
 import pandas as pd
 from pandas.errors import EmptyDataError
@@ -40,7 +41,7 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=normalized)
 
 
-def load_last_row(csv_path: Path) -> dict:
+def load_data(csv_path: Path) -> pd.DataFrame:
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV file not found: {csv_path}")
 
@@ -66,9 +67,21 @@ def load_last_row(csv_path: Path) -> dict:
             "Missing required columns in data/internships.csv: "
             + ", ".join(missing)
         )
+    return df
 
-    last_row = df.iloc[-1].to_dict()
-    return {field: ("" if pd.isna(last_row[field]) else str(last_row[field])) for field in REQUIRED_FIELDS}
+
+def load_row(csv_path: Path, internship_id: str | None = None) -> dict:
+    df = load_data(csv_path)
+
+    if internship_id:
+        selected_rows = df[df["id"].astype(str).str.strip() == internship_id.strip()]
+        if selected_rows.empty:
+            raise ValueError(f"Internship id not found in data/internships.csv: {internship_id}")
+        row = selected_rows.iloc[-1].to_dict()
+    else:
+        row = df.iloc[-1].to_dict()
+
+    return {field: ("" if pd.isna(row[field]) else str(row[field])) for field in REQUIRED_FIELDS}
 
 
 def build_header(doc: Document) -> None:
@@ -148,9 +161,9 @@ def build_content(doc: Document, data: dict) -> None:
     doc.append(NoEscape(rf"\textbf{{Supervisor:}} {escape_latex(supervisor)}"))
 
 
-def generate_pdf() -> Path:
+def generate_pdf(internship_id: str | None = None) -> Path:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    latest = load_last_row(DATA_CSV)
+    selected = load_row(DATA_CSV, internship_id)
 
     doc = Document(
         documentclass="article",
@@ -167,9 +180,9 @@ def generate_pdf() -> Path:
     doc.packages.append(Package("parskip"))
 
     build_header(doc)
-    build_content(doc, latest)
+    build_content(doc, selected)
 
-    output_id = latest["id"].strip()
+    output_id = selected["id"].strip()
     if not output_id:
         raise ValueError("The selected internship row is missing an id.")
 
@@ -179,10 +192,16 @@ def generate_pdf() -> Path:
     return doc_name.with_suffix(".pdf")
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate an internship PDF from data/internships.csv.")
+    parser.add_argument("id", nargs="?", help="Internship id to generate, for example 012026.")
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     try:
-        pdf_path = generate_pdf()
+        args = parse_args()
+        pdf_path = generate_pdf(args.id)
         print(f"PDF generated: {pdf_path}")
     except Exception as exc:
         raise SystemExit(f"Error: {exc}")
-
