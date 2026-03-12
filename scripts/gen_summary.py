@@ -69,6 +69,14 @@ def truncate_to_word_limit(text: str, max_words: int = MAX_WORDS) -> str:
     return f"{trimmed}."
 
 
+def format_summary_text(text: str) -> str:
+    sentences = [sentence.strip() for sentence in text.split(". ") if sentence.strip()]
+    formatted: list[str] = []
+    for sentence in sentences:
+        formatted.append(sentence if sentence.endswith(".") else f"{sentence}.")
+    return "\n".join(formatted)
+
+
 def build_english_summary(row: dict[str, str]) -> str:
     objectives = join_items(as_items(row.get("objectives", ""), 3), lowercase=True)
     tasks = join_items(as_items(row.get("tasks", ""), 3), lowercase=True)
@@ -120,11 +128,13 @@ def write_summary_files(row: dict[str, str]) -> tuple[Path, Path]:
     output_id = safe_output_id(row["id"])
     english_summary = build_english_summary(row)
     spanish_summary = truncate_to_word_limit(translate_text(english_summary, "es"))
+    formatted_english_summary = format_summary_text(english_summary)
+    formatted_spanish_summary = format_summary_text(spanish_summary)
 
     en_path = OUTPUT_DIR / f"{output_id}_en.txt"
     es_path = OUTPUT_DIR / f"{output_id}_es.txt"
-    en_path.write_text(f"{english_summary}\n", encoding="utf-8")
-    es_path.write_text(f"{spanish_summary}\n", encoding="utf-8")
+    en_path.write_text(f"{formatted_english_summary}\n", encoding="utf-8")
+    es_path.write_text(f"{formatted_spanish_summary}\n", encoding="utf-8")
     return en_path, es_path
 
 
