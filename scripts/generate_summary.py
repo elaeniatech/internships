@@ -6,10 +6,10 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from gen_internships import DATA_CSV, ROOT, load_data
+from generate_internships import DATA_CSV, ROOT, load_data
 
 
-OUTPUT_DIR = ROOT / "output" / "summary"
+OUTPUT_DIR = ROOT / "output" / "txt"
 MAX_WORDS = 150
 
 

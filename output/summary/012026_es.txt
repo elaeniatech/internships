@@ -1,8 +1,0 @@
-Vegetación y percepción de obstáculos (012026) es una pasantía de 2 meses.
-Desarrollar un canal de percepción para estimar la altura del césped, detectar malezas invasoras e identificar obstáculos en el campo para un pequeño robot terrestre.
-Los objetivos principales son estimar la altura del césped en condiciones de campo, detectar malezas invasoras en imágenes de cámaras e identificar postes y otros obstáculos alrededor del robot.
-El trabajo típico incluye construir módulos de adquisición de imágenes y rangos, procesar datos de cámaras y láser para estimar la altura del césped y detectar malezas invasoras y marcar detecciones.
-El puesto es más adecuado para candidatos con programación en Python, fundamentos de visión por computadora y conceptos básicos de ROS.
-Los entregables esperados incluyen un prototipo de percepción para la detección de malezas y obstáculos y resultados de pruebas de campo.
-Pago: Disponible en Bizquick.
-Supervisor: Kaleb Granados.

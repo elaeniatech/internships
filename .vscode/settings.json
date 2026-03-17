@@ -2,47 +2,49 @@
   "latex-workshop.latex.autoClean.run": "never",
   "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
   "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.outDir": "%DIR%/../pdf",
   "latex-workshop.latex.tools": [
-          {
-            "name": "xelatexmk-biber",
-            "command": "latexmk",
-            "args": [
-              "-xelatex",
-              "-synctex=1",
-              "-interaction=nonstopmode",
-              "-file-line-error",
-              "%DOC%"
-            ]
-          },
-          {
-            "name": "clean",
-            "command": "latexmk",
-            "args": [
-              "-e",
-              "$clean_ext = 'nav snm synctex.gz';",
-              "-c",
-              "-outdir=%OUTDIR%",
-              "%DOC%"]
-          },
-          {
-            "name": "clean bbl",
-            "command": "powershell",
-            "args": ["-Command",
-            "if (Test-Path (Join-Path '%OUTDIR%' '%DOCFILE%.bbl')) { Remove-Item -Force (Join-Path '%OUTDIR%' '%DOCFILE%.bbl') }"
-            ]
-          
-          }
+    {
+      "name": "lualatexmk",
+      "command": "latexmk",
+      "args": [
+        "-lualatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ]
+    },
+    {
+      "name": "clean",
+      "command": "latexmk",
+      "args": [
+        "-e",
+        "$clean_ext = 'nav snm synctex.gz';",
+        "-c",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ]
+    },
+    {
+      "name": "clean bbl",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (Test-Path (Join-Path '%OUTDIR%' '%DOCFILE%.bbl')) { Remove-Item -Force (Join-Path '%OUTDIR%' '%DOCFILE%.bbl') }"
+      ]
+    }
   ],
   "latex-workshop.latex.recipes": [
-
-        {
-            "name": "combo",
-            "tools": [
-                "xelatexmk-biber",
-                "clean",
-                "clean bbl"
-            ]
-        },
+    {
+      "name": "combo",
+      "tools": [
+        "lualatexmk",
+        "clean",
+        "clean bbl"
+      ]
+    }
   ],
   "latex-workshop.latex.recipe.default": "combo",
   "python-envs.defaultEnvManager": "ms-python.python:system",

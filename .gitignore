@@ -1,0 +1,5 @@
+__pycache__/
+.vscode/
+output/pdf/*.pdf
+output/tex/*.tex
+output/txt/*.txt

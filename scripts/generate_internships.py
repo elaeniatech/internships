@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -13,8 +14,9 @@ from pylatex.utils import escape_latex
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_CSV = ROOT / "data" / "internships.csv"
-OUTPUT_DIR = ROOT / "output" / "pdf"
-RIGHT_LOGO = ROOT / "fig" / "logo.png"
+OUTPUT_PDF_DIR = ROOT / "output" / "pdf"
+OUTPUT_TEX_DIR = ROOT / "output" / "tex"
+RIGHT_LOGO = ROOT / "assets" / "images" / "logo.png"
 
 REQUIRED_FIELDS = [
     "id",
@@ -85,9 +87,10 @@ def load_row(csv_path: Path, internship_id: str | None = None) -> dict:
 
 
 def build_header(doc: Document) -> None:
+    right_logo_path = os.path.relpath(RIGHT_LOGO, OUTPUT_TEX_DIR).replace('\\', '/') if RIGHT_LOGO.exists() else ""
     right_logo = (
-        rf"\includegraphics[width=0.82\linewidth]{{{RIGHT_LOGO.as_posix()}}}"
-        if RIGHT_LOGO.exists()
+        rf"\includegraphics[width=0.82\linewidth]{{{right_logo_path}}}"
+        if right_logo_path
         else ""
     )
     header = rf"""
@@ -162,7 +165,8 @@ def build_content(doc: Document, data: dict) -> None:
 
 
 def generate_pdf(internship_id: str | None = None) -> Path:
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_PDF_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_TEX_DIR.mkdir(parents=True, exist_ok=True)
     selected = load_row(DATA_CSV, internship_id)
 
     doc = Document(
@@ -187,9 +191,13 @@ def generate_pdf(internship_id: str | None = None) -> Path:
         raise ValueError("The selected internship row is missing an id.")
 
     safe_output_id = "".join(char if char.isalnum() or char in ("-", "_") else "_" for char in output_id)
-    doc_name = OUTPUT_DIR / safe_output_id
-    doc.generate_pdf(str(doc_name), clean_tex=False)
-    return doc_name.with_suffix(".pdf")
+    pdf_stem = OUTPUT_PDF_DIR / safe_output_id
+    tex_stem = OUTPUT_TEX_DIR / safe_output_id
+    doc.generate_pdf(str(pdf_stem), clean_tex=False, compiler="lualatex")
+    generated_tex = pdf_stem.with_suffix(".tex")
+    if generated_tex.exists():
+        generated_tex.replace(tex_stem.with_suffix(".tex"))
+    return pdf_stem.with_suffix(".pdf")
 
 
 def parse_args() -> argparse.Namespace:
@@ -201,7 +209,7 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     try:
         args = parse_args()
-        pdf_path = generate_pdf("012026")
+        pdf_path = generate_pdf(args.id)
         print(f"PDF generated: {pdf_path}")
     except Exception as exc:
         raise SystemExit(f"Error: {exc}")
