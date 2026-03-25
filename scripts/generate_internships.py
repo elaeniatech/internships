@@ -206,10 +206,18 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def prompt_for_id(internship_id: str | None) -> str | None:
+    if internship_id:
+        return internship_id.strip()
+
+    entered_id = input("Internship ID (leave empty to use the last row): ").strip()
+    return entered_id or None
+
+
 if __name__ == "__main__":
     try:
         args = parse_args()
-        pdf_path = generate_pdf(args.id)
+        pdf_path = generate_pdf(prompt_for_id(args.id))
         print(f"PDF generated: {pdf_path}")
     except Exception as exc:
         raise SystemExit(f"Error: {exc}")
